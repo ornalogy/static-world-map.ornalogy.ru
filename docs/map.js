@@ -22,7 +22,10 @@ const map = new Map({
   overlays: [overlay]
 })
 const types = {
-  5: '/img/dungeon.png'
+  5: '/img/dungeon.png',
+  7: '/img/arcanist.png',
+  10: '/img/bazaar.png',
+  14: '/img/coliseum.png'
 }
 /** @type {Array<Feature>} */
 const markers = []
@@ -49,17 +52,17 @@ viewingRadius.onchange = () => updateMap()
  * @typedef MapData
  * @property {string} title
  * @property {[number, number]} center
- * @property {Array<Marker>} markers
+ * @property {{[x:string]:Array<number,number,number>}} markers
 /**
  * @param {MapData} mapData
  */
 function initMap(mapData) {
   document.title = mapData.title + ' — ' + document.title
 
-  for (const raw of mapData.markers) {
-    const marker = new Feature({ geometry: new Point(fromLatLon(raw.location)) })
+  for (const [type, lat, lon] of Object.values(mapData.markers)) {
+    const marker = new Feature({ geometry: new Point(fromLatLon([lat, lon])) })
 
-    marker.setStyle(new Style({ image: new Icon({ src: types[raw.type], width: 64, height: 64 }) }))
+    marker.setStyle(new Style({ image: new Icon({ src: types[type], width: 64, height: 64 }) }))
     markers.push(marker)
   }
 
