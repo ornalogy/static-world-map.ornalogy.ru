@@ -12,6 +12,11 @@ if (maps.includes(map)) {
       .div({ id: 'popup-closer', class: 'ol-popup-closer' })
       .div({ id: 'popup-content' })
     )
+    .div({ class: 'layer-props' }, oom
+      .div({ class: 'layer-props-row' }, oom
+        .img({ src: '/img/lantern.png' })
+        .input({ id: 'viewing-radius', type: 'number', placeholder: 'Обзор' }))
+    )
   )
 
   import('./map.js')

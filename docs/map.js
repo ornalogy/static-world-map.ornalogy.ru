@@ -10,6 +10,8 @@ const mapName = location.search.replace('?', '')
 const container = document.getElementById('popup')
 const content = document.getElementById('popup-content')
 const closer = document.getElementById('popup-closer')
+/** @type {HTMLInputElement} */// @ts-ignore
+const viewingRadius = document.getElementById('viewing-radius')
 const overlay = new Overlay({
   element: container,
   autoPan: { animation: { duration: 250 } }
@@ -20,10 +22,11 @@ const map = new Map({
   overlays: [overlay]
 })
 const types = {
-  5: 'img/dungeon.png'
+  5: '/img/dungeon.png'
 }
 /** @type {Array<Feature>} */
 const markers = []
+const explorerImg = '/img/explorer_m.png'
 /** @type {Feature} */
 let explorerMarker = null
 
@@ -33,6 +36,7 @@ fetch(`./maps/${mapName}.json`)
 
 closer.onclick = () => closePopup()
 map.on('singleclick', evt => updateMap(evt.coordinate))
+viewingRadius.onchange = () => updateMap()
 
 
 /**
@@ -54,23 +58,13 @@ function initMap(mapData) {
 
   for (const raw of mapData.markers) {
     const marker = new Feature({ geometry: new Point(fromLatLon(raw.location)) })
-    const distance = getDistance({ lat: mapData.center[0], lon: mapData.center[1] }, { lat: raw.location[0], lon: raw.location[1] })
 
-    marker.setStyle(new Style({
-      image: new Icon({ src: types[raw.type], width: 64, height: 64 }),
-      text: new Text({
-        text: `${distance}м`,
-        font: '16px Noto Sans,sans-serif',
-        fill: new Fill({ color: 'black' }),
-        stroke: new Stroke({ color: 'white', width: 2 }),
-        offsetY: -18
-      })
-    }))
+    marker.setStyle(new Style({ image: new Icon({ src: types[raw.type], width: 64, height: 64 }) }))
     markers.push(marker)
   }
 
   explorerMarker = new Feature({ geometry: new Point(fromLatLon(mapData.center)) })
-  explorerMarker.setStyle(new Style({ image: new Icon({ src: './img/explorer_m.png', width: 32, height: 32 }) }))
+  explorerMarker.setStyle(new Style({ image: new Icon({ src: explorerImg, width: 32, height: 32 }) }))
 
   map.addLayer(new VectorLayer({ source: new VectorSource({ features: [explorerMarker, ...markers] }) }))
   map.setView(new View({
@@ -79,28 +73,40 @@ function initMap(mapData) {
     maxZoom: 18,
     minZoom: 10
   }))
+
+  updateMap(fromLatLon(mapData.center))
 }
 
 
+/** @type {Array<number>} */
+let lastUpdateMapCoordinate
+
 /**
- * @param {Array<number>} coordinate
+ * @param {Array<number>} [coordinate]
  */
 function updateMap(coordinate) {
-  const latLon = toLatLon(coordinate)
+  const current = lastUpdateMapCoordinate = (coordinate || lastUpdateMapCoordinate)
+  const pixel = coordinate ? map.getPixelFromCoordinate(coordinate) : null
+  const features = pixel ? map.getFeaturesAtPixel(pixel) : null
 
-  if (explorerMarker) { // @ts-ignore
-    explorerMarker.getGeometry().setCoordinates(coordinate)
-    openPopup(coordinate, latLon)
-
+  // @ts-ignore
+  if (features && features.length === 1 && features[0].getStyle().getImage().getSrc() === explorerImg) {
+    // @ts-ignore
+    openPopup(features[0].getGeometry().getCoordinates())
+  } else if (explorerMarker) {
+    closePopup() // @ts-ignore
+    explorerMarker.getGeometry().setCoordinates(current)
     for (const marker of markers) { // @ts-ignore
       const pos = toLatLon(marker.getGeometry().getCoordinates())
+      const latLon = toLatLon(current)
       const distance = getDistance({ lat: latLon[0], lon: latLon[1] }, { lat: pos[0], lon: pos[1] })
+      const viewing = viewingRadius.value ? parseInt(viewingRadius.value) : 0
 
       // @ts-ignore
       marker.getStyle().setText(new Text({
         text: `${distance}м`,
-        font: '16px Noto Sans,sans-serif',
-        fill: new Fill({ color: 'black' }),
+        font: ((viewing && viewing >= distance) ? 'bold ' : '') + '16px Noto Sans,sans-serif',
+        fill: new Fill({ color: viewing ? (viewing < distance ? 'FireBrick' : 'DarkGreen') : 'black' }),
         stroke: new Stroke({ color: 'white', width: 2 }),
         offsetY: -18
       }))
@@ -111,10 +117,13 @@ function updateMap(coordinate) {
 
 /**
  * @param {Array<number>} coordinate
- * @param {Array<number>} latLon
  */
-function openPopup(coordinate, latLon) {
-  content.innerHTML = '<div>You explore here:</div><code>' + latLon + '</code>'
+function openPopup(coordinate) {
+  const latLon = toLatLon(coordinate)
+  const lat = (latLon[0] * 10000000 ^ 0) / 10000000
+  const lon = (latLon[1] * 10000000 ^ 0) / 10000000
+
+  content.innerHTML = `<div>Я здесь:</div><code>${lat},${lon}</code>`
   overlay.setPosition(coordinate)
 }
 
