@@ -1,5 +1,9 @@
 declare module 'https://cdn.jsdelivr.net/npm/@notml/core/+esm' {
-    export * from '@notml/core'
+  export * from '@notml/core'
+}
+
+declare module 'https://cdn.jsdelivr.net/npm/geolib@3.3.4/+esm' {
+  export * from 'geolib'
 }
 
 declare module 'https://cdn.jsdelivr.net/npm/ol@8.1.0/+esm' {

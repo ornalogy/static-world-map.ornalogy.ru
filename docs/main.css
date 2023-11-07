@@ -6,6 +6,10 @@ body,
   margin: 0;
 }
 
+#map {
+  cursor: pointer;
+}
+
 .maps-list {
   display  : flex;
   gap      : 16px;
