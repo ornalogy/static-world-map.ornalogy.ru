@@ -6,6 +6,7 @@ import { Tile, Vector as VectorLayer } from 'https://cdn.jsdelivr.net/npm/ol@8.1
 import { fromLonLat, toLonLat } from 'https://cdn.jsdelivr.net/npm/ol@8.1.0/proj.js/+esm'
 import { Point } from 'https://cdn.jsdelivr.net/npm/ol@8.1.0/geom.js/+esm'
 import { Icon, Text, Fill, Stroke, Style } from 'https://cdn.jsdelivr.net/npm/ol@8.1.0/style.js/+esm'
+import { GeoJSON } from 'https://cdn.jsdelivr.net/npm/ol@8.1.0/format.js/+esm'
 
 const mapName = location.search.replace('?', '')
 const container = document.getElementById('popup')
@@ -58,6 +59,7 @@ viewingRadius.onchange = () => updateMap()
 /**
  * @typedef MapData
  * @property {string} title
+ * @property {number} [osmid]
  * @property {[number, number]} center
  * @property {{[x:string]:Array<number,number,number>}} markers
 /**
@@ -95,6 +97,36 @@ function initMap(mapData) {
   }))
 
   updateMap(fromLatLon(mapData.center))
+
+  if ('osmid' in mapData) showPolygon(mapData.osmid)
+}
+
+
+/**
+ * @typedef GEODetails
+ * @property {{coordinates:Array}} geometry
+ */
+/**
+ * @param {number} osmid
+ */
+async function showPolygon(osmid) {
+  const res = await fetch(`https://nominatim.openstreetmap.org/details?osmtype=R&osmid=${osmid}&polygon_geojson=1&linkedplaces=0&format=json`)
+  /** @type {GEODetails} */
+  const details = await res.json()
+  const geojson = new GeoJSON().readFeatures(details.geometry, { featureProjection: 'EPSG:3857' })
+  const features = []
+
+  for (const feature of geojson) {
+    feature.setStyle(new Style({
+      stroke: new Stroke({
+        color: 'rgba(255, 0, 0, 0.3)',
+        width: 3
+      })
+    }))
+    features.push(feature)
+  }
+
+  map.addLayer(new VectorLayer({ source: new VectorSource({ features }) }))
 }
 
 

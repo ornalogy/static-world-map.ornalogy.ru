@@ -2,9 +2,11 @@ import { oom } from 'https://cdn.jsdelivr.net/npm/@notml/core/+esm'
 
 const map = location.search.replace('?', '')
 const maps = {
-  yaroslavl: 'Ярославль',
-  izhevsk: 'Ижевск',
-  sevastopol: 'Севастополь'
+  'yaroslavl': 'Ярославль',
+  'izhevsk': 'Ижевск',
+  'sevastopol': 'Севастополь',
+  'naberezhnye-chelny': 'Набережные Челны',
+  'kazan': 'Казань'
 }
 const mapsIds = Object.keys(maps).sort()
 

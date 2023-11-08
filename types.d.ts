@@ -10,6 +10,10 @@ declare module 'https://cdn.jsdelivr.net/npm/ol@8.1.0/+esm' {
   export * from 'ol'
 }
 
+declare module 'https://cdn.jsdelivr.net/npm/ol@8.1.0/format.js/+esm' {
+  export * from 'ol/format.js'
+}
+
 declare module 'https://cdn.jsdelivr.net/npm/ol@8.1.0/source.js/+esm' {
   export * from 'ol/source.js'
 }
