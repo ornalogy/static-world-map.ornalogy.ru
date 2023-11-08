@@ -6,6 +6,10 @@ body,
   margin: 0;
 }
 
+body * {
+  user-select: none;
+}
+
 #map {
   cursor: pointer;
 }
