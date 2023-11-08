@@ -16,6 +16,7 @@ if (maps.includes(map)) {
       .div({ class: 'layer-props-row' }, oom
         .img({ src: '/img/lantern.png' })
         .input({ id: 'viewing-radius', type: 'number', placeholder: 'Обзор' }))
+      .div({ class: 'layer-props-row hidden', id: 'can-reach-markers' })
     )
   )
 

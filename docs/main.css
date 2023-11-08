@@ -18,9 +18,21 @@ body,
 }
 
 .layer-props {
-  position: absolute;
-  top     : 8px;
-  right   : 8px;
+  font-family   : 'Noto Sans', sans-serif;
+  position      : absolute;
+  top           : 8px;
+  right         : 8px;
+  width         : min-content;
+  display       : flex;
+  flex-direction: column;
+  gap           : 4px;
+  background    : #ccca;
+  padding       : 4px;
+  border-radius : 4px;
+}
+
+.layer-props img {
+  image-rendering: pixelated;
 }
 
 .layer-props-row {
@@ -29,7 +41,26 @@ body,
 }
 
 #viewing-radius {
-  width: 4rem;
+  width: 5rem;
+}
+
+#can-reach-markers {
+  display  : flex;
+  gap      : 2px;
+  flex-wrap: wrap;
+}
+
+.can-reach-marker {
+  font-weight   : bold;
+  color         : DarkGreen;
+  display       : flex;
+  flex-direction: column;
+  align-items   : center;
+}
+
+.can-reach-marker img {
+  width : 32px;
+  height: 32px;
 }
 
 .ol-popup {
@@ -78,4 +109,8 @@ body,
 
 .ol-popup-closer:after {
   content: "✖";
+}
+
+.hidden {
+  display: none !important;
 }

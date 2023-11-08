@@ -1,3 +1,4 @@
+import { oom } from 'https://cdn.jsdelivr.net/npm/@notml/core/+esm'
 import { getDistance } from 'https://cdn.jsdelivr.net/npm/geolib@3.3.4/+esm'
 import { Map, View, Feature, Overlay } from 'https://cdn.jsdelivr.net/npm/ol@8.1.0/+esm'
 import { OSM, Vector as VectorSource } from 'https://cdn.jsdelivr.net/npm/ol@8.1.0/source.js/+esm'
@@ -12,6 +13,7 @@ const content = document.getElementById('popup-content')
 const closer = document.getElementById('popup-closer')
 /** @type {HTMLInputElement} */// @ts-ignore
 const viewingRadius = document.getElementById('viewing-radius')
+const canReachMarkers = document.getElementById('can-reach-markers')
 const overlay = new Overlay({
   element: container,
   autoPan: { animation: { duration: 250 } }
@@ -21,16 +23,27 @@ const map = new Map({
   layers: [new Tile({ source: new OSM() })],
   overlays: [overlay]
 })
-const types = {
-  5: '/img/dungeon.png',
-  7: '/img/arcanist.png',
-  10: '/img/bazaar.png',
-  14: '/img/coliseum.png'
+/**
+ * @type {{[x:number]:{icon:string,textOffsetY:number}}}
+ */
+const markerTypes = {
+  5: { icon: '/img/dungeon.png', textOffsetY: -18 },
+  7: { icon: '/img/arcanist.png', textOffsetY: -28 },
+  10: { icon: '/img/bazaar.png', textOffsetY: -36 },
+  14: { icon: '/img/coliseum.png', textOffsetY: -30 }
 }
-/** @type {Array<Feature>} */
+/**
+ * @typedef Marker
+ * @property {Point} point
+ * @property {Style} style
+ * @property {Feature} feature
+ * @property {number} type
+ * @property {number[]} location [lat, lon]
+ */
+/** @type {Array<Marker>} */
 const markers = []
 const explorerImg = '/img/explorer_m.png'
-/** @type {Feature} */
+/** @type {Marker} */
 let explorerMarker = null
 
 fetch(`./maps/${mapName}.json`)
@@ -43,12 +56,6 @@ viewingRadius.onchange = () => updateMap()
 
 
 /**
- * @typedef Marker
- * @property {string} uuid
- * @property {5} type
- * @property {[number, number]} location
- */
-/**
  * @typedef MapData
  * @property {string} title
  * @property {[number, number]} center
@@ -57,19 +64,29 @@ viewingRadius.onchange = () => updateMap()
  * @param {MapData} mapData
  */
 function initMap(mapData) {
+  const features = []
+
   document.title = mapData.title + ' — ' + document.title
 
   for (const [type, lat, lon] of Object.values(mapData.markers)) {
-    const marker = new Feature({ geometry: new Point(fromLatLon([lat, lon])) })
+    const location = [lat, lon]
+    const point = new Point(fromLatLon(location))
+    const feature = new Feature({ geometry: point })
+    const style = new Style({ image: new Icon({ src: markerTypes[type].icon, width: 64, height: 64 }) })
 
-    marker.setStyle(new Style({ image: new Icon({ src: types[type], width: 64, height: 64 }) }))
-    markers.push(marker)
+    feature.setStyle(style)
+    markers.push({ point, style, feature, type, location })
+    features.push(feature)
   }
 
-  explorerMarker = new Feature({ geometry: new Point(fromLatLon(mapData.center)) })
-  explorerMarker.setStyle(new Style({ image: new Icon({ src: explorerImg, width: 32, height: 32 }) }))
+  const point = new Point(fromLatLon(mapData.center))
+  const feature = new Feature({ geometry: point })
+  const style = new Style({ image: new Icon({ src: explorerImg, width: 32, height: 32 }) })
 
-  map.addLayer(new VectorLayer({ source: new VectorSource({ features: [explorerMarker, ...markers] }) }))
+  feature.setStyle(style)
+  explorerMarker = { point, style, feature, type: null, location: mapData.center }
+
+  map.addLayer(new VectorLayer({ source: new VectorSource({ features: [feature, ...features] }) }))
   map.setView(new View({
     center: fromLatLon(mapData.center),
     zoom: 12,
@@ -92,27 +109,51 @@ function updateMap(coordinate) {
   const pixel = coordinate ? map.getPixelFromCoordinate(coordinate) : null
   const features = pixel ? map.getFeaturesAtPixel(pixel) : null
 
-  // @ts-ignore
-  if (features && features.length === 1 && features[0].getStyle().getImage().getSrc() === explorerImg) {
-    // @ts-ignore
-    openPopup(features[0].getGeometry().getCoordinates())
+  if (features && features.length === 1 && features[0] === explorerMarker.feature) {
+    openPopup(explorerMarker.point.getCoordinates())
   } else if (explorerMarker) {
-    closePopup() // @ts-ignore
-    explorerMarker.getGeometry().setCoordinates(current)
-    for (const marker of markers) { // @ts-ignore
-      const pos = toLatLon(marker.getGeometry().getCoordinates())
+    const canReach = {}
+
+    closePopup()
+    explorerMarker.point.setCoordinates(current)
+    for (const marker of markers) {
+      const pos = marker.location
       const latLon = toLatLon(current)
       const distance = getDistance({ lat: latLon[0], lon: latLon[1] }, { lat: pos[0], lon: pos[1] })
       const viewing = viewingRadius.value ? parseInt(viewingRadius.value) : 0
+      const available = viewing && viewing >= distance
 
-      // @ts-ignore
-      marker.getStyle().setText(new Text({
+      if (available) {
+        if (marker.type in canReach) {
+          canReach[marker.type]++
+        } else {
+          canReach[marker.type] = 1
+        }
+      }
+      marker.style.setText(new Text({
         text: `${distance}м`,
-        font: ((viewing && viewing >= distance) ? 'bold ' : '') + '16px Noto Sans,sans-serif',
+        font: (available ? 'bold ' : '') + '16px Noto Sans,sans-serif',
         fill: new Fill({ color: viewing ? (viewing < distance ? 'FireBrick' : 'DarkGreen') : 'black' }),
         stroke: new Stroke({ color: 'white', width: 2 }),
-        offsetY: -18
+        offsetY: markerTypes[marker.type].textOffsetY
       }))
+    }
+
+    const canReachTypes = Object.keys(canReach)
+
+    canReachMarkers.innerHTML = ''
+    if (canReachTypes.length > 0) {
+      const markers = oom(canReachMarkers)
+
+      canReachTypes.sort((a, b) => canReach[b] - canReach[a])
+      for (const type of canReachTypes) {
+        markers(oom.div({ class: 'can-reach-marker' }, oom
+          .img({ src: markerTypes[type].icon })
+          .span(String(canReach[type]))))
+      }
+      canReachMarkers.classList.remove('hidden')
+    } else {
+      canReachMarkers.classList.add('hidden')
     }
   }
 }
