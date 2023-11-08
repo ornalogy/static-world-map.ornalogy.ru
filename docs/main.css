@@ -6,12 +6,8 @@ body,
   margin: 0;
 }
 
-body * {
-  user-select: none;
-}
-
 #map {
-  cursor: pointer;
+  cursor: cell;
 }
 
 .maps-list {
@@ -116,5 +112,5 @@ body * {
 }
 
 .hidden {
-  display: none !important;
+  display: none !;
 }
