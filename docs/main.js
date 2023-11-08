@@ -2,9 +2,11 @@ import { oom } from 'https://cdn.jsdelivr.net/npm/@notml/core/+esm'
 
 const map = location.search.replace('?', '')
 const maps = {
-  yaroslavl: 'Ярославль'
+  yaroslavl: 'Ярославль',
+  izhevsk: 'Ижевск',
+  sevastopol: 'Севастополь'
 }
-const mapsIds = Object.keys(maps)
+const mapsIds = Object.keys(maps).sort()
 
 if (mapsIds.includes(map)) {
   oom(document.body, oom
