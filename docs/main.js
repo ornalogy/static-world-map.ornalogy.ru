@@ -8,7 +8,8 @@ const maps = {
   'naberezhnye-chelny': 'Набережные Челны',
   'kazan': 'Казань',
   'samara': 'Самара',
-  'tula': 'Тула'
+  'tula': 'Тула',
+  'ryazan': 'Рязань'
 }
 const mapsIds = Object.keys(maps).sort()
 
