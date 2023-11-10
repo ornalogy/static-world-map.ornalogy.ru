@@ -7,7 +7,8 @@ const maps = {
   'sevastopol': 'Севастополь',
   'naberezhnye-chelny': 'Набережные Челны',
   'kazan': 'Казань',
-  'samara': 'Самара'
+  'samara': 'Самара',
+  'tula': 'Тула'
 }
 const mapsIds = Object.keys(maps).sort()
 
