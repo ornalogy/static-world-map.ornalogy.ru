@@ -30,7 +30,7 @@
 * *name* - название населенного пунтка
 * *osmid* - ид населенного пункта на карте OpenStreetMap. Например Москва = 2555133 (https://www.openstreetmap.org/relation/2555133)
 * *latitude* *longitude* - координаты точки на карте, например [yandex.ru/maps](https://yandex.ru/maps)
-* *markeType* - тим метки на карте:
+* *markerType* - тим метки на карте:
   * 5 - Данж
   * 7 - Арканист
   * 10 - Базар
