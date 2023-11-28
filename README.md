@@ -19,7 +19,7 @@
   "osmid": <osmid>,
   "center": [ <latitude>, <longitude> ],
   "markers": {
-    "<uuid>": [ <markeType>, <latitude>, <longitude> ],
+    "<uuid>": [ <markerType>, <latitude>, <longitude> ],
     ...
   }
 }
