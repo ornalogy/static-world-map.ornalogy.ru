@@ -25,13 +25,21 @@ const map = new Map({
   overlays: [overlay]
 })
 /**
- * @type {{[x:number]:{icon:string,textOffsetY:number}}}
+ * @type {{[x:number]:{icon:string,width?:number,height?:number,textOffsetY:number}}}
  */
 const markerTypes = {
   5: { icon: '/img/dungeon.png', textOffsetY: -18 },
   7: { icon: '/img/arcanist.png', textOffsetY: -28 },
   10: { icon: '/img/bazaar.png', textOffsetY: -36 },
-  14: { icon: '/img/coliseum.png', textOffsetY: -30 }
+  14: { icon: '/img/coliseum.png', textOffsetY: -30 },
+  101: { icon: '/img/tower_1_3.png', width: 64, height: 128, textOffsetY: -78 },
+  102: { icon: '/img/tower_2_3.png', width: 64, height: 128, textOffsetY: -78 },
+  103: { icon: '/img/tower_3_3.png', width: 64, height: 128, textOffsetY: -78 },
+  104: { icon: '/img/tower_4_3.png', width: 64, height: 128, textOffsetY: -78 },
+  105: { icon: '/img/monument_demeter.png', width: 64, height: 128, textOffsetY: -32 },
+  106: { icon: '/img/monument_ithra.png', width: 64, height: 128, textOffsetY: -32 },
+  107: { icon: '/img/monument_thor.png', width: 64, height: 128, textOffsetY: -32 },
+  108: { icon: '/img/monument_vulcan.png', width: 64, height: 128, textOffsetY: -32 }
 }
 /**
  * @typedef Marker
@@ -55,13 +63,23 @@ closer.onclick = () => closePopup()
 map.on('singleclick', evt => updateMap(evt.coordinate))
 viewingRadius.onchange = () => updateMap()
 
-
+/**
+ * @typedef {{[x:string]:Array<number,number,number>}} MapMarkers
+ */
+/**
+ * @typedef MapLayer
+ * @property {string} title
+ * @property {MapMarkers} markers
+ */
 /**
  * @typedef MapData
  * @property {string} title
  * @property {number} [osmid]
  * @property {[number, number]} center
- * @property {{[x:string]:Array<number,number,number>}} markers
+ * @property {number} zoom
+ * @property {MapMarkers} [markers]
+ * @property {MapLayer[]} [layers]
+ */
 /**
  * @param {MapData} mapData
  */
@@ -70,15 +88,37 @@ function initMap(mapData) {
 
   document.title = mapData.title + ' — ' + document.title
 
-  for (const [type, lat, lon] of Object.values(mapData.markers)) {
-    const location = [lat, lon]
-    const point = new Point(fromLatLon(location))
-    const feature = new Feature({ geometry: point })
-    const style = new Style({ image: new Icon({ src: markerTypes[type].icon, width: 64, height: 64 }) })
+  if (mapData.markers) {
+    for (const [type, lat, lon] of Object.values(mapData.markers)) {
+      const location = [lat, lon]
+      const point = new Point(fromLatLon(location))
+      const feature = new Feature({ geometry: point })
+      const style = new Style({ image: new Icon({ src: markerTypes[type].icon, width: 64, height: 64 }) })
 
-    feature.setStyle(style)
-    markers.push({ point, style, feature, type, location })
-    features.push(feature)
+      feature.setStyle(style)
+      markers.push({ point, style, feature, type, location })
+      features.push(feature)
+    }
+  }
+  if (mapData.layers) {
+    for (const layer of mapData.layers) {
+      for (const [type, lat, lon] of Object.values(layer.markers)) {
+        const location = [lat, lon]
+        const point = new Point(fromLatLon(location))
+        const feature = new Feature({ geometry: point })
+        const style = new Style({
+          image: new Icon({
+            src: markerTypes[type].icon,
+            width: markerTypes[type].width || 64,
+            height: markerTypes[type].height || 64
+          })
+        })
+
+        feature.setStyle(style)
+        markers.push({ point, style, feature, type, location })
+        features.push(feature)
+      }
+    }
   }
 
   const point = new Point(fromLatLon(mapData.center))
@@ -91,7 +131,7 @@ function initMap(mapData) {
   map.addLayer(new VectorLayer({ source: new VectorSource({ features: [feature, ...features] }) }))
   map.setView(new View({
     center: fromLatLon(mapData.center),
-    zoom: 12,
+    zoom: mapData.zoom || 12,
     maxZoom: 18,
     minZoom: 10
   }))

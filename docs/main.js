@@ -12,8 +12,12 @@ const maps = {
   'ryazan': 'Рязань'
 }
 const mapsIds = Object.keys(maps).sort()
+const сustomMaps = {
+  'moving/msk1': 'MSK Башни/монументы'
+}
+const сustomMapsIds = Object.keys(сustomMaps).sort()
 
-if (mapsIds.includes(map)) {
+if (mapsIds.includes(map) || сustomMapsIds.includes(map)) {
   oom(document.body, oom
     .div({ id: 'map' })
     .div({ id: 'popup', class: 'ol-popup' }, oom
@@ -31,12 +35,22 @@ if (mapsIds.includes(map)) {
   import('./map.js')
 } else {
   const list = oom.div({ class: 'maps-list' })
+  const сustomList = oom.div({ class: 'maps-list' })
 
   for (const m of mapsIds) {
     list(oom.a(maps[m], { href: `?${m}` }))
   }
+  for (const m of сustomMapsIds) {
+    сustomList(oom.a(сustomMaps[m], { href: `?${m}` }))
+  }
 
-  oom(document.body, list, oom.div({ class: 'maps-list' }, oom.a({
-    href: 'https://github.com/ornalogy/static-world-map.ornalogy.ru#readme'
-  }, 'Как добавить свою карту?')))
+  oom(document.body,
+    oom.h2('Карты постоянных объектов'),
+    list,
+    oom.h2('Произвольные карты'),
+    сustomList,
+    oom.div({ class: 'maps-list' }, oom.a({
+      href: 'https://github.com/ornalogy/static-world-map.ornalogy.ru#readme'
+    }, 'Как добавить свою карту?'))
+  )
 }
