@@ -32,15 +32,15 @@ const markerTypes = {
   7: { icon: '/img/arcanist.png', textOffsetY: -28 },
   10: { icon: '/img/bazaar.png', textOffsetY: -36 },
   14: { icon: '/img/coliseum.png', textOffsetY: -30 },
-  101: { icon: '/img/tower_1_3.png', width: 64, height: 128, textOffsetY: -78 },
-  102: { icon: '/img/tower_2_3.png', width: 64, height: 128, textOffsetY: -78 },
-  103: { icon: '/img/tower_3_3.png', width: 64, height: 128, textOffsetY: -78 },
-  104: { icon: '/img/tower_4_3.png', width: 64, height: 128, textOffsetY: -78 },
-  105: { icon: '/img/tower_5_3.png', width: 64, height: 128, textOffsetY: -78 },
-  106: { icon: '/img/monument_demeter.png', width: 64, height: 128, textOffsetY: -32 },
-  107: { icon: '/img/monument_ithra.png', width: 64, height: 128, textOffsetY: -32 },
-  108: { icon: '/img/monument_thor.png', width: 64, height: 128, textOffsetY: -32 },
-  109: { icon: '/img/monument_vulcan.png', width: 64, height: 128, textOffsetY: -32 }
+  101: { icon: '/img/tower_1_3.png', width: 64, height: 128, textOffsetY: -74 },
+  102: { icon: '/img/tower_2_3.png', width: 64, height: 128, textOffsetY: -74 },
+  103: { icon: '/img/tower_3_3.png', width: 64, height: 128, textOffsetY: -74 },
+  104: { icon: '/img/tower_4_3.png', width: 64, height: 128, textOffsetY: -74 },
+  105: { icon: '/img/tower_5_3.png', width: 64, height: 128, textOffsetY: -74 },
+  106: { icon: '/img/monument_demeter.png', width: 64, height: 128, textOffsetY: -26 },
+  107: { icon: '/img/monument_ithra.png', width: 64, height: 128, textOffsetY: -26 },
+  108: { icon: '/img/monument_thor.png', width: 64, height: 128, textOffsetY: -26 },
+  109: { icon: '/img/monument_vulcan.png', width: 64, height: 128, textOffsetY: -26 }
 }
 /**
  * @typedef Marker
