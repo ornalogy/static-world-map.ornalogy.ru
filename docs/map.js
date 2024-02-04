@@ -25,7 +25,7 @@ const map = new Map({
   overlays: [overlay]
 })
 /**
- * @type {{[x:number|string]:{icon:string,width?:number,height?:number,textOffsetY:number}}}
+ * @type {{[x:string]:{icon:string,width?:number,height?:number,textOffsetY:number}}}
  */
 const markerTypes = {
   5: { icon: '/img/dungeon.png', textOffsetY: -18 },
