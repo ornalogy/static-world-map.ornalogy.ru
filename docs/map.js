@@ -25,7 +25,7 @@ const map = new Map({
   overlays: [overlay]
 })
 /**
- * @type {{[x:number]:{icon:string,width?:number,height?:number,textOffsetY:number}}}
+ * @type {{[x:number|string]:{icon:string,width?:number,height?:number,textOffsetY:number}}}
  */
 const markerTypes = {
   5: { icon: '/img/dungeon.png', textOffsetY: -18 },
@@ -36,10 +36,11 @@ const markerTypes = {
   102: { icon: '/img/tower_2_3.png', width: 64, height: 128, textOffsetY: -78 },
   103: { icon: '/img/tower_3_3.png', width: 64, height: 128, textOffsetY: -78 },
   104: { icon: '/img/tower_4_3.png', width: 64, height: 128, textOffsetY: -78 },
-  105: { icon: '/img/monument_demeter.png', width: 64, height: 128, textOffsetY: -32 },
-  106: { icon: '/img/monument_ithra.png', width: 64, height: 128, textOffsetY: -32 },
-  107: { icon: '/img/monument_thor.png', width: 64, height: 128, textOffsetY: -32 },
-  108: { icon: '/img/monument_vulcan.png', width: 64, height: 128, textOffsetY: -32 }
+  105: { icon: '/img/tower_5_3.png', width: 64, height: 128, textOffsetY: -78 },
+  106: { icon: '/img/monument_demeter.png', width: 64, height: 128, textOffsetY: -32 },
+  107: { icon: '/img/monument_ithra.png', width: 64, height: 128, textOffsetY: -32 },
+  108: { icon: '/img/monument_thor.png', width: 64, height: 128, textOffsetY: -32 },
+  109: { icon: '/img/monument_vulcan.png', width: 64, height: 128, textOffsetY: -32 }
 }
 /**
  * @typedef Marker
@@ -54,6 +55,17 @@ const markers = []
 const explorerImg = '/img/explorer_m.png'
 /** @type {Marker} */
 let explorerMarker = null
+
+markerTypes.t_prometheus = markerTypes['101']
+markerTypes.t_themis = markerTypes['102']
+markerTypes.t_oceanus = markerTypes['103']
+markerTypes.t_eos = markerTypes['104']
+markerTypes.t_selene = markerTypes['105']
+
+markerTypes.m_demeter = markerTypes['106']
+markerTypes.m_ithra = markerTypes['107']
+markerTypes.m_thor = markerTypes['108']
+markerTypes.m_vulcan = markerTypes['109']
 
 fetch(`./maps/${mapName}.json`)
   .then(async res => initMap(await res.json()))
