@@ -14,7 +14,8 @@ const maps = {
 const mapsIds = Object.keys(maps).sort()
 const сustomMaps = {
   'moving/msk1': 'MSK Башни/монументы',
-  'moving/krasnodar': 'Краснодар Башни/монументы'
+  'moving/krasnodar': 'Краснодар Башни/монументы',
+  'moving/ussurijsk': 'Уссурийск Башни/монументы'
 }
 const сustomMapsIds = Object.keys(сustomMaps).sort()
 
