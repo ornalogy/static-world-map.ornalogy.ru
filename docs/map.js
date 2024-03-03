@@ -197,14 +197,14 @@ function updateMap(coordinate) {
     openPopup(explorerMarker.point.getCoordinates())
   } else if (explorerMarker) {
     const canReach = {}
+    const latLon = toLatLon(current)
+    const viewing = viewingRadius.value ? parseInt(viewingRadius.value) : 0
 
     closePopup()
     explorerMarker.point.setCoordinates(current)
     for (const marker of markers) {
       const pos = marker.location
-      const latLon = toLatLon(current)
       const distance = getDistance({ lat: latLon[0], lon: latLon[1] }, { lat: pos[0], lon: pos[1] })
-      const viewing = viewingRadius.value ? parseInt(viewingRadius.value) : 0
       const available = viewing && viewing >= distance
 
       if (available) {
