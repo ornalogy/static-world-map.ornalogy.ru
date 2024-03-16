@@ -10,7 +10,8 @@ const maps = {
   'samara': 'Самара',
   'tula': 'Тула',
   'ryazan': 'Рязань',
-  'yekaterinburg': 'Екатеринбург'
+  'yekaterinburg': 'Екатеринбург',
+  'moscow': 'Москва'
 }
 const mapsIds = Object.keys(maps).sort()
 const сustomMaps = {
